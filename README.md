@@ -1,7 +1,6 @@
 # cinemapedia
 
-# DEV
-
+# RAMA DEV
 ## Instalacion
 1. Clonar el repositorio
 2. Ejecutar `flutter pub get` para instalar las dependencias
