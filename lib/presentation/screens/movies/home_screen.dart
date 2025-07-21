@@ -1,4 +1,5 @@
 import 'package:cinemapedia/presentation/providers/movies/movies_providers.dart';
+import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,6 +23,7 @@ class _HomeWidget extends ConsumerStatefulWidget {
 }
 
 class _HomeWidgetState extends ConsumerState<_HomeWidget> {
+  
   @override
   void initState() {
     super.initState();
@@ -30,13 +32,16 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
+    //cargamos las peliculas del provider
+    // final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
+    //este mostrara solo seis de las peliculas de la cartelera
+    final slideShowMovies = ref.watch(moviesSlideshowprovider);
 
     return Column(
       children: [
         CustomAppbar(),
 
-        MoviesSlideshow(movies: nowPlayingMovies)
+        MoviesSlideshow(movies: slideShowMovies)
         // Expanded(
         //   child: ListView.builder(
         //     itemCount: nowPlayingMovies.length,

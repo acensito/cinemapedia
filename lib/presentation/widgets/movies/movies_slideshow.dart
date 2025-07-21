@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 
 class MoviesSlideshow extends StatelessWidget {
   final List<Movie> movies;
-
+  
   const MoviesSlideshow({super.key, required this.movies});
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return SizedBox(
       height: 210,
       width: double.infinity,
@@ -18,7 +19,14 @@ class MoviesSlideshow extends StatelessWidget {
         scale: 0.9,
         autoplay: true,
         itemCount: movies.length,
-        itemBuilder: (context, index) => _Slider(movie: movies[index])
+        itemBuilder: (context, index) => _Slider(movie: movies[index]),
+        pagination: SwiperPagination(
+          // margin: EdgeInsetsGeometry.only(top: 0), //queda abajo del todo
+          builder: DotSwiperPaginationBuilder(
+            activeColor: colors.primary,
+            color: colors.secondary
+          )
+        ),
         ),
     );
   }
