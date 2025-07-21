@@ -19,7 +19,7 @@ class CustomAppbar extends StatelessWidget {
             children: [
               Icon(Icons.movie_creation_outlined, color: colors.primary),
               const SizedBox(),
-              Text('Cinemapedia', style: titleStyle),
+              Text('Cinemapedia', style: titleStyle?.copyWith(color: colors.primary)),
               const Spacer(),
       
               IconButton(onPressed: () {
