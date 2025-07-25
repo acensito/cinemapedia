@@ -1,4 +1,3 @@
-import 'package:cinemapedia/presentation/providers/movies/movies_providers.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _HomeWidget(),
+      bottomNavigationBar: CustomBottomNavigationbar(),
     );
   }
 }
@@ -36,21 +36,19 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
     // final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     //este mostrara solo seis de las peliculas de la cartelera
     final slideShowMovies = ref.watch(moviesSlideshowprovider);
+    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
 
     return Column(
       children: [
         CustomAppbar(),
 
-        MoviesSlideshow(movies: slideShowMovies)
-        // Expanded(
-        //   child: ListView.builder(
-        //     itemCount: nowPlayingMovies.length,
-        //     itemBuilder: (context, index) {
-        //       final movie = nowPlayingMovies[index];
-        //       return ListTile(title: Text(movie.title));
-        //     },
-        //   ),
-        // ),
+        MoviesSlideshow(movies: slideShowMovies),
+
+        MoviesHorizonatlListView(
+          movies: nowPlayingMovies,
+          title: 'En cines',
+          subTitle: 'Lunes 20',
+        ),
       ],
     );
   }
