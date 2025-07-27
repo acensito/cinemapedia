@@ -1,0 +1,163 @@
+import 'package:animate_do/animate_do.dart';
+import 'package:cinemapedia/config/helpers/human_format.dart';
+import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:flutter/material.dart';
+
+class MoviesHorizontalListView extends StatefulWidget {
+  const MoviesHorizontalListView({
+    super.key,
+    required this.movies,
+    this.title,
+    this.subTitle,
+    this.loadNextPage,
+  });
+
+  final List<Movie> movies;
+  final String? title;
+  final String? subTitle;
+  final VoidCallback? loadNextPage;
+
+  @override
+  State<MoviesHorizontalListView> createState() => _MoviesHorizontalListViewState();
+}
+
+class _MoviesHorizontalListViewState extends State<MoviesHorizontalListView> {
+
+  final scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    scrollController.addListener((){
+      if (widget.loadNextPage == null) return;
+
+      if ((scrollController.position.pixels + 200) >= scrollController.position.maxScrollExtent) {
+        print('load next page');
+
+        widget.loadNextPage!();
+      }
+    });
+  }
+
+  @override void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 350,
+      child: Column(
+        children: [
+          if (widget.title != null || widget.subTitle != null)
+            _Title(title: widget.title, subTitle: widget.subTitle),
+          Expanded(
+            child: ListView.builder(
+              controller: scrollController,
+              itemCount: widget.movies.length,
+              scrollDirection: Axis.horizontal,
+              physics: BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                return _Slide(movie: widget.movies[index]);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title({this.title, this.subTitle});
+  final String? title;
+  final String? subTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.titleLarge;
+
+    return Container(
+      padding: const EdgeInsets.only(top: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        children: [
+          if (title != null) Text(title!, style: titleStyle),
+          const Spacer(),
+          if (subTitle != null)
+            FilledButton(
+              style: ButtonStyle(visualDensity: VisualDensity.compact),
+              onPressed: () {},
+              child: Text(subTitle!),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Slide extends StatelessWidget {
+  final Movie movie;
+  const _Slide({required this.movie});
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyles = Theme.of(context).textTheme;
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        children: [
+          SizedBox(
+            width: 150,
+            child: ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(20),
+              child: Image.network(
+                movie.posterPath,
+                fit: BoxFit.cover,
+                width: 150,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress != null) {
+                    return Padding(
+                      padding: EdgeInsetsGeometry.all(8.0),
+                      child: Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    );
+                  }
+                  return FadeIn(child: child);
+                },
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 5),
+          //Title
+          SizedBox(
+            width: 150,
+            child: Text(movie.title, maxLines: 2, style: textStyles.titleSmall),
+          ),
+          //Rating
+          SizedBox(
+            width: 150,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  Icon(Icons.star, color: Colors.orange),
+                  // Text('${movie.voteAverage}', style: textStyles.bodyMedium?.copyWith(color: Colors.orange)),
+                  Text(HumanFormat.number(movie.voteAverage), style: textStyles.bodyMedium?.copyWith(color: Colors.orange)),
+                  // SizedBox(width: 10),
+                  const Spacer(),
+                  Text(HumanFormat.number(movie.popularity), style: textStyles.bodySmall)
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}

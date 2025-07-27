@@ -23,7 +23,6 @@ class _HomeWidget extends ConsumerStatefulWidget {
 }
 
 class _HomeWidgetState extends ConsumerState<_HomeWidget> {
-  
   @override
   void initState() {
     super.initState();
@@ -38,16 +37,50 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
     final slideShowMovies = ref.watch(moviesSlideshowprovider);
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
 
-    return Column(
-      children: [
-        CustomAppbar(),
+    return CustomScrollView(
+      slivers: [
 
-        MoviesSlideshow(movies: slideShowMovies),
+        SliverAppBar(
+          floating: true,
+          flexibleSpace: FlexibleSpaceBar(
+            title: CustomAppbar(),
+          ),
+        ),
 
-        MoviesHorizonatlListView(
-          movies: nowPlayingMovies,
-          title: 'En cines',
-          subTitle: 'Lunes 20',
+        SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            return Column(
+              children: [
+                MoviesSlideshow(movies: slideShowMovies),
+
+                MoviesHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'En cines',
+                  subTitle: 'Lunes 20',
+                  loadNextPage: () => ref
+                      .read(nowPlayingMoviesProvider.notifier)
+                      .loadNextPage(),
+                ),
+                MoviesHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'Mejor calificados',
+                  subTitle: 'Desde siempre',
+                  loadNextPage: () => ref
+                      .read(nowPlayingMoviesProvider.notifier)
+                      .loadNextPage(),
+                ),
+                MoviesHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'Mejor calificados',
+                  subTitle: 'De todos los tiempos',
+                  loadNextPage: () => ref
+                      .read(nowPlayingMoviesProvider.notifier)
+                      .loadNextPage(),
+                ),
+                SizedBox(height: 10),
+              ],
+            );
+          }),
         ),
       ],
     );

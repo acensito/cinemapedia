@@ -14,12 +14,17 @@ class MoviesNotifier extends StateNotifier<List<Movie>> {
   //pagina actual
   int currentPage = 0;
   MovieCallBack fetchMoreMovies;
+  bool isLoading = false;
 
   MoviesNotifier({required this.fetchMoreMovies}) : super([]);
 
   Future<void> loadNextPage() async {
+    if (isLoading) return; //evita que haga recargas masivas
+    isLoading = true;
+    print('loading more movies');
     currentPage++;
     final List<Movie> movies = await fetchMoreMovies(page: currentPage);
     state = [...state, ...movies];
+    isLoading = false;
   }
 }

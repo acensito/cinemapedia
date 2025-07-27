@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class MoviesSlideshow extends StatelessWidget {
   final List<Movie> movies;
-  
+
   const MoviesSlideshow({super.key, required this.movies});
 
   @override
@@ -24,32 +24,26 @@ class MoviesSlideshow extends StatelessWidget {
           // margin: EdgeInsetsGeometry.only(top: 0), //queda abajo del todo
           builder: DotSwiperPaginationBuilder(
             activeColor: colors.primary,
-            color: colors.secondary
-          )
+            color: colors.secondary,
+          ),
         ),
-        ),
+      ),
     );
   }
 }
 
 class _Slider extends StatelessWidget {
-
   final Movie movie;
 
   const _Slider({required this.movie});
 
   @override
   Widget build(BuildContext context) {
-
     final decoration = BoxDecoration(
       borderRadius: BorderRadius.circular(20),
       boxShadow: [
-        BoxShadow(
-          color: Colors.black45,
-          blurRadius: 10,
-          offset: Offset(0, 10)
-        )
-      ]
+        BoxShadow(color: Colors.black45, blurRadius: 10, offset: Offset(0, 10)),
+      ],
     );
 
     return Padding(
@@ -58,14 +52,20 @@ class _Slider extends StatelessWidget {
         decoration: decoration,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: Image.network(movie.backdropPath, 
-          fit: BoxFit.cover,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress != null) {
-              return const DecoratedBox(decoration: BoxDecoration(color: Colors.black12));
-            }
-            return FadeIn(child: child);
-          },))),
+          child: Image.network(
+            movie.backdropPath,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress != null) {
+                return const DecoratedBox(
+                  decoration: BoxDecoration(color: Colors.black12),
+                );
+              }
+              return FadeIn(child: child);
+            },
+          ),
+        ),
+      ),
     );
   }
 }
