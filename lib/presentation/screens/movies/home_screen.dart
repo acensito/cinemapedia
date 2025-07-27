@@ -42,9 +42,9 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
 
         SliverAppBar(
           floating: true,
-          flexibleSpace: FlexibleSpaceBar(
+          title: FlexibleSpaceBar(
             title: CustomAppbar(),
-          ),
+          )
         ),
 
         SliverList(
