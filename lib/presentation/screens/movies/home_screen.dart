@@ -26,7 +26,10 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
   @override
   void initState() {
     super.initState();
-    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();   
+    ref.read(popularMoviesProvider.notifier).loadNextPage();  
+    ref.read(topRatedMoviesProvider.notifier).loadNextPage();
+    ref.read(upcomingMoviesProvider.notifier).loadNextPage();
   }
 
   @override
@@ -36,19 +39,23 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
     //este mostrara solo seis de las peliculas de la cartelera
     final slideShowMovies = ref.watch(moviesSlideshowprovider);
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
+    final popularMovies = ref.watch(popularMoviesProvider);
+    final topRatedMovies = ref.watch(topRatedMoviesProvider);
+    final upcomingMovies = ref.watch(upcomingMoviesProvider);
 
     return CustomScrollView(
-      slivers: [
 
+      slivers: [
+        
         SliverAppBar(
           floating: true,
-          title: FlexibleSpaceBar(
             title: CustomAppbar(),
-          )
         ),
 
         SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
+          delegate: SliverChildBuilderDelegate(
+            childCount: 1,
+            (context, index) {
             return Column(
               children: [
                 MoviesSlideshow(movies: slideShowMovies),
@@ -62,19 +69,27 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
                       .loadNextPage(),
                 ),
                 MoviesHorizontalListView(
-                  movies: nowPlayingMovies,
-                  title: 'Mejor calificados',
-                  subTitle: 'Desde siempre',
+                  movies: topRatedMovies,
+                  title: 'Mejor valoradas',
+                  subTitle: 'De todos los tiempos',
                   loadNextPage: () => ref
-                      .read(nowPlayingMoviesProvider.notifier)
+                      .read(topRatedMoviesProvider.notifier)
                       .loadNextPage(),
                 ),
                 MoviesHorizontalListView(
-                  movies: nowPlayingMovies,
-                  title: 'Mejor calificados',
-                  subTitle: 'De todos los tiempos',
+                  movies: popularMovies,
+                  title: 'Populares',
+                  // subTitle: 'De todos los tiempos',
                   loadNextPage: () => ref
-                      .read(nowPlayingMoviesProvider.notifier)
+                      .read(popularMoviesProvider.notifier)
+                      .loadNextPage(),
+                ),
+                MoviesHorizontalListView(
+                  movies: upcomingMovies,
+                  title: 'Proximamente',
+                  // subTitle: 'De todos los tiempos',
+                  loadNextPage: () => ref
+                      .read(upcomingMoviesProvider.notifier)
                       .loadNextPage(),
                 ),
                 SizedBox(height: 10),
