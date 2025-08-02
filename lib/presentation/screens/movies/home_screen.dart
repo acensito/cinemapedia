@@ -34,6 +34,12 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    //verificamos si la pantalla esta cargando
+    final initialLoading = ref.watch(initialLoadingProvider);
+    
+    if (initialLoading) {
+      return FullScreenLoader();
+    }
     //cargamos las peliculas del provider
     // final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     //este mostrara solo seis de las peliculas de la cartelera
@@ -42,8 +48,6 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
     final popularMovies = ref.watch(popularMoviesProvider);
     final topRatedMovies = ref.watch(topRatedMoviesProvider);
     final upcomingMovies = ref.watch(upcomingMoviesProvider);
-
-    return FullScreenLoader();
 
     return CustomScrollView(
 
