@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MovieScreen extends ConsumerStatefulWidget {
-
   static const String routeName = 'movie-screen';
 
   final String movieId;
@@ -16,28 +15,21 @@ class MovieScreen extends ConsumerStatefulWidget {
 }
 
 class MovieScreenState extends ConsumerState<MovieScreen> {
-
   @override
   void initState() {
     super.initState();
     // hacemos la peticion http
-    ref.read(movieDetailProvider.notifier)
-      .loadMovie(widget.movieId);
+    ref.read(movieDetailProvider.notifier).loadMovie(widget.movieId);
   }
 
   @override
   Widget build(BuildContext context) {
-
     final Movie? movie = ref.watch(movieDetailProvider)[widget.movieId];
 
     if (movie == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Loading...'),
-        ),
-        body: Center(
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
+        appBar: AppBar(title: Text('Loading...')),
+        body: Center(child: CircularProgressIndicator(strokeWidth: 2)),
       );
     }
 
@@ -46,6 +38,12 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
         physics: const ClampingScrollPhysics(),
         slivers: [
           _CustomSliverAppBar(movie: movie),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => _MovieDetails(movie: movie),
+              childCount: 1,
+            ),
+          ),
         ],
       ),
     );
@@ -53,14 +51,12 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
 }
 
 class _CustomSliverAppBar extends StatelessWidget {
-
   final Movie movie;
 
   const _CustomSliverAppBar({required this.movie});
 
   @override
   Widget build(BuildContext context) {
-
     final size = MediaQuery.of(context).size;
     return SliverAppBar(
       backgroundColor: Colors.black,
@@ -73,42 +69,130 @@ class _CustomSliverAppBar extends StatelessWidget {
           style: const TextStyle(fontSize: 20, color: Colors.white),
           textAlign: TextAlign.start,
         ),
-        background: Stack(children: [
-          SizedBox.expand(
-            child: Image(image: NetworkImage(movie.posterPath), fit: BoxFit.cover),
-          ),
-          const SizedBox.expand(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: [0.7, 1.0],
-                  colors: [
-                    Colors.transparent,
-                    Colors.black87,
-                  ],
+        background: Stack(
+          children: [
+            SizedBox.expand(
+              child: Image(
+                image: NetworkImage(movie.posterPath),
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox.expand(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [0.7, 1.0],
+                    colors: [Colors.transparent, Colors.black87],
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox.expand(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  stops: [0.0, 0.3],
-                  colors: [
-                    Colors.black87,
-                    Colors.transparent,
-                  ],
+            const SizedBox.expand(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    stops: [0.0, 0.3],
+                    colors: [Colors.black87, Colors.transparent],
+                  ),
                 ),
               ),
             ),
-          )
-        ]),
-      )
+          ],
+        ),
+      ),
+    );
+  }
+}
 
+class _MovieDetails extends StatelessWidget {
+  final Movie movie;
+  const _MovieDetails({super.key, required this.movie});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final textStyle = textTheme.titleLarge?.copyWith(
+      color: colors.onSurface,
+      fontWeight: FontWeight.bold,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsetsGeometry.all(8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: (size.width - 30) * 0.7,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(movie.title, style: textStyle),
+                    const SizedBox(height: 10),
+                    Text(
+                      movie.overview,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Release Date: ${movie.releaseDate}',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Rating: ${movie.voteAverage}',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colors.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  movie.posterPath,
+                  width: size.width * 0.3,
+                  height: size.height * 0.3,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsetsGeometry.all(8),
+          child: Wrap(
+            children: [
+              ...movie.genreIds.map(
+                (gender) => Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  child: Chip(
+                    label: Text(gender),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        //TODO: Mostrar actores
+        const SizedBox(height: 50),
+      ],
     );
   }
 }
