@@ -34,4 +34,12 @@ class MovieDBDatasource extends MoviesDatasources {
 
     return movies;
   }
+  
+  @override
+  Future<List<Movie>> getPopular({int page = 1}) {
+    // TODO: implement getPopular
+    throw UnimplementedError();
+  }
+
+  
 }
