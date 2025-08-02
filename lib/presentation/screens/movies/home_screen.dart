@@ -43,6 +43,8 @@ class _HomeWidgetState extends ConsumerState<_HomeWidget> {
     final topRatedMovies = ref.watch(topRatedMoviesProvider);
     final upcomingMovies = ref.watch(upcomingMoviesProvider);
 
+    return FullScreenLoader();
+
     return CustomScrollView(
 
       slivers: [
