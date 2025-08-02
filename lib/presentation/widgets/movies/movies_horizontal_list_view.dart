@@ -1,7 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/config/helpers/human_format.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
-import 'package:cinemapedia/presentation/screens/movies/movie_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
