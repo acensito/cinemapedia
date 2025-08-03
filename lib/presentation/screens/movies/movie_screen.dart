@@ -15,10 +15,12 @@ class MovieScreen extends ConsumerStatefulWidget {
 }
 
 class MovieScreenState extends ConsumerState<MovieScreen> {
+
   @override
   void initState() {
     super.initState();
-    // hacemos la peticion http
+    // hacemos la peticion http del provider
+    // para obtener los detalles de la pelicula
     ref.read(movieDetailProvider.notifier).loadMovie(widget.movieId);
   }
 
