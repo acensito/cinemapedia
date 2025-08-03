@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +79,14 @@ class _CustomSliverAppBar extends StatelessWidget {
               child: Image(
                 image: NetworkImage(movie.posterPath),
                 fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress != null) {
+                    return const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    );
+                  }
+                  return child;
+                },
               ),
             ),
             const SizedBox.expand(
@@ -112,14 +121,14 @@ class _CustomSliverAppBar extends StatelessWidget {
 
 class _MovieDetails extends StatelessWidget {
   final Movie movie;
-  const _MovieDetails({super.key, required this.movie});
+  const _MovieDetails({required this.movie});
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final textStyle = textTheme.titleLarge?.copyWith(
+    textTheme.titleLarge?.copyWith(
       color: colors.onSurface,
       fontWeight: FontWeight.bold,
     );
@@ -192,7 +201,7 @@ class _MovieDetails extends StatelessWidget {
             ],
           ),
         ),
-        
+
         _ActorsByMovie(movieId: movie.id.toString()),
 
         const SizedBox(height: 50),
@@ -230,13 +239,15 @@ class _ActorsByMovie extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadiusGeometry.circular(20),
-                  child: Image.network(
-                    actor?.profilePath ?? '',
-                    height: 180,
-                    width: 135,
-                    fit: BoxFit.cover,
+                FadeIn(
+                  child: ClipRRect(
+                    borderRadius: BorderRadiusGeometry.circular(20),
+                    child: Image.network(
+                      actor?.profilePath ?? '',
+                      height: 180,
+                      width: 135,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 SizedBox(height: 5),
