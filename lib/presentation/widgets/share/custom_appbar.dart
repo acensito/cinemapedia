@@ -37,7 +37,7 @@ class CustomAppbar extends ConsumerWidget {
                   showSearch<Movie?>(
                     context: context,
                     delegate: SearchMovieDelegate(searchMovies: movieRepository.searchMovies)
-                    //si existe, navega hasta la pelicula concreta
+                    //si hay resultado, navega hasta la pelicula concreta
                   ).then((movie) {
                     if (movie == null) return;
                     navigator.push('/movie/${movie.id}');
