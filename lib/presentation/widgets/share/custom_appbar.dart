@@ -30,7 +30,7 @@ class CustomAppbar extends ConsumerWidget {
               IconButton(
                 onPressed: () {
 
-                  final movieRepository = ref.read(movieRepositoryProvider);
+                  //final searchedRepository = ref.read(movieRepositoryProvider);
                   final searchQuery = ref.read(searchQueryProvider);
 
                   final navigator = GoRouter.of(context);
@@ -39,10 +39,7 @@ class CustomAppbar extends ConsumerWidget {
                     query: searchQuery,
                     context: context,
                     delegate: SearchMovieDelegate(
-                      searchMovies: (query) {
-                        ref.read(searchQueryProvider.notifier).update((state) => query);
-                        return movieRepository.searchMovies(query);
-                      })
+                      searchMovies: ref.read(searchedMoviesProvider.notifier).searchMoviesByQuery)
                     //si hay resultado, navega hasta la pelicula concreta
                   ).then((movie) {
                     if (movie == null) return;
