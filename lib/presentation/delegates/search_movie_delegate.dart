@@ -14,11 +14,21 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   StreamController<List<Movie>> debounceMovies = StreamController.broadcast();
   Timer? _debounceTimer;
 
+  void _clearStreams() {
+    debounceMovies.close();
+  }
+
   void _onQueryChanged(String query) {
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
 
-    _debounceTimer = Timer(Duration(milliseconds: 500), () {
-      //TODO buscar peliculas y emitir al stream
+    _debounceTimer = Timer(Duration(milliseconds: 500), () async {
+      if(query.isEmpty) {
+        debounceMovies.add([]);
+        return;
+      }
+
+      final movies = await searchMovies(query);
+      debounceMovies.add(movies);
     });
   }
 
@@ -44,7 +54,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     //el icono de regreso y que debe de hacer al ser pulsado
     //no retorna valor ninguno (null)
     return IconButton(
-      onPressed: () => close(context, null),
+      onPressed: () {
+        _clearStreams();
+        close(context, null);
+        },
       icon: Icon(Icons.arrow_back),
     );
   }
@@ -71,7 +84,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
           itemBuilder: (context, index) {
             final movie = movies?[index];
             if (movie == null) return const SizedBox.shrink();
-            return _MovieItem(movie, close);
+            return _MovieItem(movie, (context, movie){
+              _clearStreams();
+              close(context, movie);
+            });
           },
         );
       },
