@@ -10,8 +10,10 @@ typedef SearchMoviesCallBack = Future<List<Movie>> Function(String query);
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   final SearchMoviesCallBack searchMovies;
+  final List<Movie> initialMovies;
 
   StreamController<List<Movie>> debounceMovies = StreamController.broadcast();
+
   Timer? _debounceTimer;
 
   void _clearStreams() {
@@ -22,17 +24,20 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
 
     _debounceTimer = Timer(Duration(milliseconds: 500), () async {
-      if(query.isEmpty) {
-        debounceMovies.add([]);
-        return;
-      }
+      // if(query.isEmpty) {
+      //   debounceMovies.add(initialMovies);
+      //   return;
+      // }
 
       final movies = await searchMovies(query);
       debounceMovies.add(movies);
     });
   }
-
-  SearchMovieDelegate({required this.searchMovies});
+  //constructor
+  SearchMovieDelegate({
+    required this.initialMovies,
+    required this.searchMovies,
+  });
 
   @override
   String get searchFieldLabel => 'Buscar película';
@@ -73,9 +78,9 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     _onQueryChanged(query);
 
     return StreamBuilder(
+      initialData: initialMovies,
       stream: debounceMovies.stream,
       builder: (context, snapshot) {
-        //TO-DO limitar el numero de peticiones al escribir
 
         final movies = snapshot.data;
 
