@@ -10,7 +10,7 @@ typedef SearchMoviesCallBack = Future<List<Movie>> Function(String query);
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   final SearchMoviesCallBack searchMovies;
-  final List<Movie> initialMovies;
+  List<Movie> initialMovies;
 
   StreamController<List<Movie>> debounceMovies = StreamController.broadcast();
 
@@ -30,6 +30,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
       // }
 
       final movies = await searchMovies(query);
+      initialMovies = movies;
       debounceMovies.add(movies);
     });
   }
@@ -37,10 +38,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   SearchMovieDelegate({
     required this.initialMovies,
     required this.searchMovies,
-  });
-
-  @override
-  String get searchFieldLabel => 'Buscar película';
+  }):super(
+    searchFieldLabel: 'Buscar pelicula',
+    textInputAction: TextInputAction.search
+  );
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -69,8 +70,28 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return const Text('buildResults');
+
+    return StreamBuilder(
+      initialData: initialMovies,
+      stream: debounceMovies.stream,
+      builder: (context, snapshot) {
+
+        final movies = snapshot.data ?? [];
+
+        return ListView.builder(
+          itemCount: movies.length,
+          itemBuilder: (context, index) => _MovieItem(
+            movies[index],
+            (context, movie) {
+              _clearStreams();
+              close(context, movie);
+            },
+          ),
+        );
+      },
+    );
   }
+
 
   @override
   Widget buildSuggestions(BuildContext context) {
@@ -82,18 +103,17 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
       stream: debounceMovies.stream,
       builder: (context, snapshot) {
 
-        final movies = snapshot.data;
+        final movies = snapshot.data ?? [];
 
         return ListView.builder(
-          itemCount: movies?.length ?? 0,
-          itemBuilder: (context, index) {
-            final movie = movies?[index];
-            if (movie == null) return const SizedBox.shrink();
-            return _MovieItem(movie, (context, movie){
+          itemCount: movies.length,
+          itemBuilder: (context, index) => _MovieItem(
+            movies[index],
+            (context, movie) {
               _clearStreams();
               close(context, movie);
-            });
-          },
+            },
+          ),
         );
       },
     );
