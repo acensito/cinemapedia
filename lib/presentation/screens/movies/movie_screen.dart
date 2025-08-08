@@ -81,7 +81,7 @@ class _CustomSliverAppBar extends ConsumerWidget {
             error: (error, stackTrace) => throw UnimplementedError(),
             loading: () => const CircularProgressIndicator(strokeWidth: 2),
           ),
-          onPressed: () {
+          onPressed: () async {
             ref
                 .read(localStorageRepositoryProvider)
                 .datasource
