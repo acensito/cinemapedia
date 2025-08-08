@@ -16,7 +16,6 @@ class MovieScreen extends ConsumerStatefulWidget {
 }
 
 class MovieScreenState extends ConsumerState<MovieScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -54,6 +53,11 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
   }
 }
 
+final isFavoriteProvider = FutureProvider.family.autoDispose((ref, int movieId) {
+  final localStorageRepository = ref.watch(localStorageRepositoryProvider);
+  return localStorageRepository.isMovieFavorite(movieId);
+});
+
 class _CustomSliverAppBar extends ConsumerWidget {
   final Movie movie;
 
@@ -61,6 +65,8 @@ class _CustomSliverAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isFavoriteFuture = ref.watch(isFavoriteProvider(movie.id));
+
     final size = MediaQuery.of(context).size;
     return SliverAppBar(
       backgroundColor: Colors.black,
@@ -68,10 +74,19 @@ class _CustomSliverAppBar extends ConsumerWidget {
       foregroundColor: Colors.white,
       actions: [
         IconButton(
-          icon: const Icon(Icons.favorite_border),
+          icon: isFavoriteFuture.when(
+            data: (isFavorite) => isFavorite
+                ? const Icon(Icons.favorite_rounded, color: Colors.red)
+                : const Icon(Icons.favorite_border),
+            error: (error, stackTrace) => throw UnimplementedError(),
+            loading: () => const CircularProgressIndicator(strokeWidth: 2),
+          ),
           onPressed: () {
-            ref.watch(localStorageRepositoryProvider)
-              .datasource.toggleFavorite(movie);
+            ref
+                .read(localStorageRepositoryProvider)
+                .datasource
+                .toggleFavorite(movie);
+                ref.invalidate(isFavoriteProvider(movie.id));
           },
         ),
       ],
@@ -114,7 +129,6 @@ class _CustomSliverAppBar extends ConsumerWidget {
               end: Alignment.bottomRight,
               stops: [0.0, 0.3],
               colors: [Colors.black87, Colors.transparent],
-
             ),
           ],
         ),
@@ -125,7 +139,6 @@ class _CustomSliverAppBar extends ConsumerWidget {
 
 /// Custom gradient widget.
 class _CustomGradient extends StatelessWidget {
-
   final AlignmentGeometry begin;
   final AlignmentGeometry end;
   final List<double> stops;
@@ -140,7 +153,6 @@ class _CustomGradient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return SizedBox.expand(
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -248,7 +260,6 @@ class _MovieDetails extends StatelessWidget {
 }
 
 class _ActorsByMovie extends ConsumerWidget {
-
   final String movieId;
 
   const _ActorsByMovie({required this.movieId});
@@ -290,18 +301,18 @@ class _ActorsByMovie extends ConsumerWidget {
                 SizedBox(height: 5),
                 Text(actor?.name ?? '', maxLines: 2),
                 Text(
-                  actor?.character ?? '', 
+                  actor?.character ?? '',
                   maxLines: 2,
-                  style: TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),)
-
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
-            
           );
-
         },
-      )
+      ),
     );
-
   }
 }
