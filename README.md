@@ -8,4 +8,5 @@
    ```
    THEMOVIEDB_API_KEY=tu_api_key
    ```
+4. Ejecutar `flutter pub run build_runner build` para generar el código de Isar.
 
