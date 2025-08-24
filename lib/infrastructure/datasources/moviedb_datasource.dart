@@ -16,7 +16,7 @@ class MovieDBDatasource extends MoviesDatasources {
 
   //metodo que convierte el json a una lista de peliculas
   //se usa el mapper para convertir el json a una entidad de pelicula
-  List<Movie> _jsonToMovies(json) {
+  List<Movie> _jsonToMovies(Map<String, dynamic> json) {
     final movieBDResponse = MovieDBResponse.fromJson(json);
 
     final List<Movie> movies = movieBDResponse.results
