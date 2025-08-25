@@ -3,12 +3,14 @@ import 'package:cinemapedia/domain/repositories/local_storage_repository.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final favoriteMoviesProvider =
+    StateNotifierProvider<StorageMoviesNotifier, Map<int, Movie>>((ref) {
+      final localStorageRepository = ref.watch(localStorageRepositoryProvider);
 
-final favoriteMoviesProvider = StateNotifierProvider<StorageMoviesNotifier, Map<int, Movie>>((ref) {
-  final localStorageRepository = ref.watch(localStorageRepositoryProvider);
-
-  return StorageMoviesNotifier(localStorageRepository: localStorageRepository);
-});
+      return StorageMoviesNotifier(
+        localStorageRepository: localStorageRepository,
+      );
+    });
 
 /*
 {
@@ -20,14 +22,16 @@ final favoriteMoviesProvider = StateNotifierProvider<StorageMoviesNotifier, Map<
 */
 
 class StorageMoviesNotifier extends StateNotifier<Map<int, Movie>> {
-
   int page = 0;
   final LocalStorageRepository localStorageRepository;
 
-  StorageMoviesNotifier({required this.localStorageRepository}):super({});
+  StorageMoviesNotifier({required this.localStorageRepository}) : super({});
 
-  Future<void> loadNextPage() async {
-    final movies = await localStorageRepository.loadMovies(offset: page * 10); //TODO limit 20
+  Future<List<Movie>> loadNextPage() async {
+    final movies = await localStorageRepository.loadMovies(
+      limit: 20,
+      offset: page * 20,
+    ); //TODO limit 20
     page++;
     final tempMoviesMap = <int, Movie>{};
     for (final movie in movies) {
@@ -35,8 +39,6 @@ class StorageMoviesNotifier extends StateNotifier<Map<int, Movie>> {
     }
 
     state = {...state, ...tempMoviesMap};
-
-    // return movies;
+    return movies;
   }
-
 }
