@@ -31,7 +31,7 @@ class StorageMoviesNotifier extends StateNotifier<Map<int, Movie>> {
     final movies = await localStorageRepository.loadMovies(
       limit: 20,
       offset: page * 20,
-    ); //TODO limit 20
+    );
     page++;
     final tempMoviesMap = <int, Movie>{};
     for (final movie in movies) {
