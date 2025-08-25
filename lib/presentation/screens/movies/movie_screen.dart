@@ -82,9 +82,11 @@ class _CustomSliverAppBar extends ConsumerWidget {
             loading: () => const CircularProgressIndicator(strokeWidth: 2),
           ),
           onPressed: () async {
-            ref
-                .read(localStorageRepositoryProvider)
-                .datasource
+            await ref
+                // .read(localStorageRepositoryProvider)
+                // .datasource
+                // .toggleFavorite(movie);
+                .read(favoriteMoviesProvider.notifier)
                 .toggleFavorite(movie);
                 ref.invalidate(isFavoriteProvider(movie.id));
           },
